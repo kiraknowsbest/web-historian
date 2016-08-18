@@ -4,27 +4,39 @@ var httpUtils = require('./http-helpers');
 var url = require('url');
 // require more modules/folders here!
 exports.handleRequest = function (req, res) {
-  console.log(req.method, 'this is the only thing that anything is hingin');
+  var givenUrl = req.url.slice(1);
   if (req.method === 'GET') {
-    res.writeHead(200, httpUtils.headers);
-    httpUtils.serveAssets( res, archive.paths.siteAssets, 'index.html', function (data) {
-      res.write(data);
-      res.end();
-    });
+    if ( req.url === '/' ) { // url is undefined, i.e. accessing main page, return index.html
+      res.writeHead(200, httpUtils.headers);
+      httpUtils.serveAssets( res, archive.paths.siteAssets, 'index.html', function (data) {
+        res.write(data);
+        res.end();
+      });
+    } else { // needs to return true if archived, i.e. requesting site
+      archive.isUrlArchived( givenUrl, function (data) { 
+        if (data) {
+          res.writeHead(200, httpUtils.headers);
+          httpUtils.serveAssets( res, archive.paths.archivedSites, givenUrl, function (data) {
+            res.write(data);
+            res.end();
+          });
+        } else { // not archived, i.e. 404
+          res.writeHead( 404, httpUtils.headers );
+          res.end();
+        }
+      });
+    } 
   } else if ( req.method === 'POST' ) {
     res.writeHead(302, httpUtils.headers);
     var data = [];
     req.on('data', function (chunk) {
-      // console.log(chunk);
       data.push( chunk );
     });
 
     req.on('end', function () {
-      //console.log('Buffer parsed is here ------------>', Buffer.concat( data ).toString());
       var site = (url.parse(data.concat().toString()).pathname.slice(4));
-      exports.router['/' + site] = true;
-      archive.addUrlToList(site, function () {
-        console.log('sumfin');
+      archive.addUrlToList(site, function (err) { 
+        err && (console.log(err));
       });
     });
     httpUtils.serveAssets( res, archive.paths.siteAssets, 'loading.html', function (data) {
@@ -32,8 +44,4 @@ exports.handleRequest = function (req, res) {
       res.end();
     });
   }
-};
-
-exports.router = {
-  '/': true
 };

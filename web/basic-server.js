@@ -12,12 +12,11 @@ var port = 8080;
 var ip = '127.0.0.1';
 
 var server = http.createServer( function ( req, res ) {
-  var route = handler.router[url.parse( req.url ).pathname];
-  
-  if ( url.parse( req.url ).pathname in handler.router ) {
+  var method = req.method;
+
+  if ( method === 'POST' || method === 'GET' ) {
     handler.handleRequest( req, res );
   } else {
-    console.log('it fail=============================');
     res.writeHead( 404, httpUtils.headers );
     res.end();
   }
