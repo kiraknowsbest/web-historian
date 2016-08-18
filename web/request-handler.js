@@ -35,13 +35,19 @@ exports.handleRequest = function (req, res) {
 
     req.on('end', function () {
       var site = (url.parse(data.concat().toString()).pathname.slice(4));
-      archive.addUrlToList(site, function (err) { 
-        err && (console.log(err));
+      archive.isUrlInList(site, function (check) {
+        if (check) {
+        //todo (redirect to archive file)
+        } else {
+          archive.addUrlToList(site, function (err) { 
+            err && (console.log(err));
+          });
+          httpUtils.serveAssets( res, archive.paths.siteAssets, 'loading.html', function (data) {
+            res.write(data);
+            res.end();
+          });
+        }
       });
-    });
-    httpUtils.serveAssets( res, archive.paths.siteAssets, 'loading.html', function (data) {
-      res.write(data);
-      res.end();
     });
   }
 };
