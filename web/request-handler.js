@@ -38,6 +38,21 @@ exports.handleRequest = function (req, res) {
       archive.isUrlInList(site, function (check) {
         if (check) {
         //todo (redirect to archive file)
+          archive.isUrlArchived(site, function (check) {
+            if (check) {
+              httpUtils.serveAssets( res, archive.paths.archivedSites, site, function (data) {
+                res.write(data);
+                res.end();
+              });
+            } else {
+              httpUtils.serveAssets( res, archive.paths.siteAssets, 'loading.html', function (data) {
+                res.write(data);
+                res.end();
+              });
+            }
+          });
+          
+          
         } else {
           archive.addUrlToList(site, function (err) { 
             err && (console.log(err));
