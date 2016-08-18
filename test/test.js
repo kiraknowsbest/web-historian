@@ -26,7 +26,7 @@ describe('server', function() {
   });
 
   describe('archived websites', function () {
-    describe('GET', function () {
+    xdescribe('GET', function () {
       it('should return the content of a website from the archive', function (done) {
         var fixtureName = 'www.google.com';
         var fixturePath = archive.paths.archivedSites + '/' + fixtureName;
@@ -52,7 +52,7 @@ describe('server', function() {
       });
     });
 
-    xdescribe('POST', function () {
+    describe('POST', function () {
       it('should append submitted sites to \'sites.txt\'', function(done) {
         var url = 'www.example.com';
 
@@ -76,7 +76,7 @@ describe('server', function() {
   });
 });
 
-xdescribe('archive helpers', function() {
+describe('archive helpers', function() {
   describe('#readListOfUrls', function () {
     it('should read urls from sites.txt', function (done) {
       var urlArray = ['example1.com', 'example2.com'];
@@ -89,7 +89,7 @@ xdescribe('archive helpers', function() {
     });
   });
 
-  xdescribe('#isUrlInList', function () {
+  describe('#isUrlInList', function () {
     it('should check if a url is in the list', function (done) {
       var urlArray = ['example1.com', 'example2.com'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
@@ -109,7 +109,7 @@ xdescribe('archive helpers', function() {
     });
   });
 
-  xdescribe('#addUrlToList', function () {
+  describe('#addUrlToList', function () {
     it('should add a url to the list', function (done) {
       var urlArray = ['example1.com', 'example2.com\n'];
       fs.writeFileSync(archive.paths.list, urlArray.join('\n'));
@@ -123,7 +123,7 @@ xdescribe('archive helpers', function() {
     });
   });
 
-  xdescribe('#isUrlArchived', function () {
+  describe('#isUrlArchived', function () {
     it('should check if a url is archived', function (done) {
       fs.writeFileSync(archive.paths.archivedSites + '/www.example.com', 'blah blah');
 
@@ -142,7 +142,7 @@ xdescribe('archive helpers', function() {
     });
   });
 
-  xdescribe('#downloadUrls', function () {
+  describe('#downloadUrls', function () {
     it('should download all pending urls in the list', function (done) {
       var urlArray = ['www.example.com', 'www.google.com'];
       archive.downloadUrls(urlArray);

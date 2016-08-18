@@ -11,16 +11,13 @@ initialize('./archives');
 var port = 8080;
 var ip = '127.0.0.1';
 
-var router = {
-  '/': handler.handleRequest 
-};
-
 var server = http.createServer( function ( req, res ) {
-  console.log(req.url, req.method, "this is the uRL we are looking for");
-  var route = router[url.parse( req.url ).pathname];
-  if ( route ) {
-    route( req, res );
+  var route = handler.router[url.parse( req.url ).pathname];
+  
+  if ( url.parse( req.url ).pathname in handler.router ) {
+    handler.handleRequest( req, res );
   } else {
+    console.log('it fail=============================');
     res.writeHead( 404, httpUtils.headers );
     res.end();
   }

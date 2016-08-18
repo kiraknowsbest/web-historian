@@ -25,18 +25,37 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function() {
+exports.readListOfUrls = function(callback) {
+  fs.readFile(exports.paths.list, 'utf8', function(err, data) {
+    data = data.split('\n');
+    callback( data );
+  });
+  //goes into sites.txt and returns an array of sites!
+};
+
+exports.isUrlInList = function(url, callback) {
+  //call readlist and check the array to see if url is in the array
+  exports.readListOfUrls(function(array) {
+    callback( array.indexOf(url) !== -1);
+  });
+};
+
+exports.addUrlToList = function(url, callback) {
+  //add the url to the page
+  fs.appendFile(exports.paths.list, url + '\n', function () {
+    callback();
+  });
+};
+
+exports.isUrlArchived = function(url, callback) {
+  fs.exists(exports.paths.archivedSites + '/' + url, function(exists) {
+    callback(exists);
+  });
+};
+
+exports.downloadUrls = function(arrayOfUrls) {
+  arrayOfUrls.forEach(function(url) {
+    fs.createWriteStream(exports.paths.archivedSites + '/' + url).end();
+  });
   
-};
-
-exports.isUrlInList = function() {
-};
-
-exports.addUrlToList = function() {
-};
-
-exports.isUrlArchived = function() {
-};
-
-exports.downloadUrls = function() {
 };

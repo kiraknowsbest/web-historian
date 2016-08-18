@@ -3,16 +3,16 @@ var archive = require('../helpers/archive-helpers');
 var httpUtils = require('./http-helpers');
 var url = require('url');
 // require more modules/folders here!
-
 exports.handleRequest = function (req, res) {
-
-  if (req.method === 'GET' && req.url === '/') {
+  console.log(req.method, 'this is the only thing that anything is hingin');
+  if (req.method === 'GET') {
     res.writeHead(200, httpUtils.headers);
-    httpUtils.serveAssets( res, 'index.html', function (data) {
+    httpUtils.serveAssets( res, archive.paths.siteAssets, 'index.html', function (data) {
       res.write(data);
       res.end();
     });
-  } else if ( req.method === 'POST' && req.url === '/' ) {
+  } else if ( req.method === 'POST' ) {
+    res.writeHead(302, httpUtils.headers);
     var data = [];
     req.on('data', function (chunk) {
       // console.log(chunk);
@@ -21,9 +21,19 @@ exports.handleRequest = function (req, res) {
 
     req.on('end', function () {
       //console.log('Buffer parsed is here ------------>', Buffer.concat( data ).toString());
-      var site = url.parse(data.concat().toString()).pathname.slice(4);
-      archive.readListOfUrls(site);
+      var site = (url.parse(data.concat().toString()).pathname.slice(4));
+      exports.router['/' + site] = true;
+      archive.addUrlToList(site, function () {
+        console.log('sumfin');
+      });
     });
-    res.end(archive.paths.siteAssets);
+    httpUtils.serveAssets( res, archive.paths.siteAssets, 'loading.html', function (data) {
+      res.write(data);
+      res.end();
+    });
   }
+};
+
+exports.router = {
+  '/': true
 };
