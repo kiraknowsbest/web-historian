@@ -1,2 +1,14 @@
-// Use the code in `archive-helpers.js` to actually download the urls
-// that are waiting.
+var archive = require('../helpers/archive-helpers');
+
+archive.readListOfUrls( function (array) {
+
+  array.forEach( function (element) {
+    archive.isUrlArchived( element, function (bool) {
+    
+      if (!bool) {
+        archive.downloadUrls([element]);
+      }
+
+    });
+  });
+});
