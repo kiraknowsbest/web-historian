@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
 var request = require('request');
+var Promise = require('bluebird');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -26,7 +27,7 @@ exports.initialize = function(pathsObj) {
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(callback) {
+exports.readUrls = function( callback ) {
   fs.readFile(exports.paths.list, 'utf8', function(err, data) {
     data = data.split('\n');
     callback( data );
@@ -34,25 +35,33 @@ exports.readListOfUrls = function(callback) {
   //goes into sites.txt and returns an array of sites!
 };
 
-exports.isUrlInList = function(url, callback) {
+exports.readListOfUrls = Promise.promisify( exports.readUrls );
+
+exports.isInList = function(url, callback) {
   //call readlist and check the array to see if url is in the array
   exports.readListOfUrls(function(array) {
     callback( array.indexOf(url) !== -1);
   });
 };
 
-exports.addUrlToList = function(url, callback) {
+exports.isUrlInList = Promise.promisify(exports.isInList);
+
+exports.addUrl = function(url, callback) {
   //add the url to the page
   fs.appendFile(exports.paths.list, url + '\n', function () {
     callback();
   });
 };
 
-exports.isUrlArchived = function(url, callback) {
+exports.addUrlToList = Promise.promisify(exports.addUrl);
+
+exports.isArchived = function(url, callback) {
   fs.exists(exports.paths.archivedSites + '/' + url, function(exists) {
     callback(exists);
   });
 };
+
+exports.isUrlArchived = Promise.promisify(exports.isArchived);
 
 exports.downloadUrls = function(arrayOfUrls) {
   arrayOfUrls.forEach(function(url) {
